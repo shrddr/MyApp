@@ -6,30 +6,48 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+
+    private MySQLiteOpenHelper mDbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        List<String> titles = new ArrayList();
-        titles.add("a");
+        mDbHelper = new MySQLiteOpenHelper(this);
 
-        Intent intent = getIntent();
-        String message = intent.getStringExtra(MealEditorActivity.EXTRA_MESSAGE);
-        if (message != null)
-            titles.add(message);
+        refreshList();
+    }
+
+    private void refreshList() {
+
+        List<Meal> meals = mDbHelper.getMeals();
 
         ListView listView = (ListView) findViewById(R.id.listView);
         listView.setAdapter(
-                new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, titles));
+                new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, meals));
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Meal m = (Meal)parent.getItemAtPosition(position);
+                Intent intent = new Intent(MainActivity.this, MealEditorActivity.class);
+                intent.putExtra(MealEditorActivity.MESSAGE_ID, m.id);
+                startActivity(intent);
+            }
+        });
+    }
+
+    public void cleanDB(View view) {
+        mDbHelper.cleanDB();
+        refreshList();
     }
 
     @Override
@@ -43,4 +61,6 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, MealEditorActivity.class);
         startActivity(intent);
     }
+
+
 }
