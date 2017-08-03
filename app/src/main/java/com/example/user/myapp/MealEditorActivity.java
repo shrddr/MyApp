@@ -1,21 +1,24 @@
 package com.example.user.myapp;
 
+import android.app.TimePickerDialog;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.text.format.DateFormat;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TimePicker;
 
-public class MealEditorActivity extends AppCompatActivity {
+import java.util.Date;
+
+public class MealEditorActivity extends AppCompatActivity
+        implements TimePickerDialog.OnTimeSetListener {
 
     public static final String MESSAGE_ID = "com.example.myfirstapp.MESSAGE_ID";
-
-    private static int BAD_ID = -1;
+    private static final int NEW_ID = -1;
 
     private MySQLiteOpenHelper mDbHelper;
-
-    private Boolean editing = false;
-    private int editId;
+    private int mealId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,28 +26,45 @@ public class MealEditorActivity extends AppCompatActivity {
         setContentView(R.layout.activity_details_input);
 
         mDbHelper = new MySQLiteOpenHelper(this);
+        EditText editMealTime = (EditText)findViewById(R.id.editMealTime);
+        EditText editMealName = (EditText)findViewById(R.id.editMealName);
 
         Intent intent = getIntent();
-        int id = intent.getIntExtra(MESSAGE_ID, BAD_ID);
-        if (id != BAD_ID) {
-            editing = true;
-            editId = id;
-            EditText editText = (EditText)findViewById(R.id.editText2);
+        mealId = intent.getIntExtra(MESSAGE_ID, NEW_ID);
 
-            Meal m = mDbHelper.getMeal(id);
-            editText.setText(m.name);
+        if (mealId == NEW_ID) {
+            Date d = new Date();
+            editMealTime.setText(DateFormat.getTimeFormat(this).format(d));
+            editMealTime.setTag(d.getTime()/1000);
         }
+
+        if (mealId != NEW_ID) {
+            Meal m = mDbHelper.getMeal(mealId);
+            editMealName.setText(m.name);
+            Date d = new Date((long)m.time*1000);
+            editMealTime.setText(DateFormat.getTimeFormat(this).format(d));
+        }
+
+        new SetTime(editMealTime, this);
+    }
+
+    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+        EditText editMealTime = (EditText)findViewById(R.id.editMealTime);
+        editMealTime.setText(hourOfDay + ":" + minute);
     }
 
     public void confirm(View view) {
+        EditText editMealName = (EditText)findViewById(R.id.editMealName);
+        EditText editMealTime = (EditText)findViewById(R.id.editMealTime);
 
-        EditText editText = (EditText) findViewById(R.id.editText2);
-        String s = editText.getText().toString();
+        Meal m = new Meal(mealId,
+                editMealName.getText().toString(),
+                (int)(long)editMealTime.getTag());
 
-        if (editing)
-            mDbHelper.editMeal(editId, s);
+        if (mealId == NEW_ID)
+            mDbHelper.addMeal(m);
         else
-            mDbHelper.addMeal(s);
+            mDbHelper.editMeal(m);
 
         startActivity(new Intent(this, MainActivity.class));
     }

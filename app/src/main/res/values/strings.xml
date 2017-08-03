@@ -3,7 +3,7 @@
     <string name="edit_message">Enter a message</string>
     <string name="button_add">Add meal</string>
     <string name="button_confirm">Confirm</string>
-    <string name="button_clean">Clean db</string>
+    <string name="button_clean">Clear DB</string>
     <string name="button_send">Send</string>
     <string name="MealEditorTitle">Meal</string>
 </resources>

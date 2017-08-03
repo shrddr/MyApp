@@ -7,7 +7,7 @@
     tools:context="com.example.user.myapp.MealEditorActivity">
 
     <EditText
-        android:id="@+id/editText2"
+        android:id="@+id/editMealName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
@@ -16,7 +16,6 @@
         android:hint="@string/edit_message"
         android:inputType="textPersonName"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/button2"
         tools:layout_editor_absoluteY="0dp" />
 
     <Button
@@ -25,12 +24,36 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:onClick="showTimePickerDialog"
+        android:text="edit"
+        app:layout_constraintLeft_toRightOf="@+id/editMealTime"
+        app:layout_constraintTop_toBottomOf="@+id/editMealName" />
+
+    <Button
+        android:id="@+id/button4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         android:onClick="confirm"
         android:text="@string/button_confirm"
-        app:layout_constraintBaseline_toBaselineOf="@+id/editText2"
-        app:layout_constraintLeft_toRightOf="@+id/editText2"
-        app:layout_constraintRight_toRightOf="parent" />
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editMealTime" />
+
+    <EditText
+        android:id="@+id/editMealTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:ems="10"
+        android:inputType="time"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editMealName"
+        tools:clickable="true" />
 
 </android.support.constraint.ConstraintLayout>

@@ -3,17 +3,21 @@ package com.example.user.myapp;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.format.DateFormat;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 
+import java.util.Calendar;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    private Calendar currentDay;
     private MySQLiteOpenHelper mDbHelper;
 
     @Override
@@ -23,12 +27,20 @@ public class MainActivity extends AppCompatActivity {
 
         mDbHelper = new MySQLiteOpenHelper(this);
 
-        refreshList();
+        currentDay = Calendar.getInstance();
+        refreshDisplay();
+
+        EditText editTextDate = (EditText)findViewById(R.id.editTextDate);
+        new SetDate(editTextDate, this);
     }
 
-    private void refreshList() {
+    private void refreshDisplay() {
 
-        List<Meal> meals = mDbHelper.getMeals();
+        EditText editTextDate = (EditText)findViewById(R.id.editTextDate);
+        editTextDate.setTag(currentDay.getTime().getTime()/1000);
+        editTextDate.setText(DateFormat.getDateFormat(this).format(currentDay.getTime()));
+
+        List<Meal> meals = mDbHelper.getMeals(currentDay.getTime());
 
         ListView listView = (ListView) findViewById(R.id.listView);
         listView.setAdapter(
@@ -47,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void cleanDB(View view) {
         mDbHelper.cleanDB();
-        refreshList();
+        refreshDisplay();
     }
 
     @Override
@@ -62,5 +74,13 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void prevDay(View view) {
+        currentDay.add(Calendar.DATE, -1);
+        refreshDisplay();
+    }
 
+    public void nextDay(View view) {
+        currentDay.add(Calendar.DATE, 1);
+        refreshDisplay();
+    }
 }
