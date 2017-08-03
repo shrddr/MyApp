@@ -2,6 +2,7 @@ package com.example.user.myapp;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.text.InputType;
 import android.text.format.DateFormat;
 import android.view.View;
 import android.widget.DatePicker;
@@ -24,12 +25,14 @@ class SetDate implements View.OnFocusChangeListener, DatePickerDialog.OnDateSetL
     public SetDate(TextView editText, Context ctx){
         this.ctx = ctx;
         this.textView = editText;
+        this.textView.setInputType(InputType.TYPE_NULL);
         this.textView.setOnFocusChangeListener(this);
         this.myCalendar = Calendar.getInstance();
     }
 
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
+
         if (!hasFocus) return;
 
         Date dt;
@@ -53,5 +56,4 @@ class SetDate implements View.OnFocusChangeListener, DatePickerDialog.OnDateSetL
         this.textView.setTag(myCalendar.getTime().getTime()/1000);
         this.textView.setText(DateFormat.getDateFormat(ctx).format(myCalendar.getTime()));
     }
-
 }

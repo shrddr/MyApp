@@ -20,6 +20,7 @@ public class MealEditorActivity extends AppCompatActivity
 
     private MySQLiteOpenHelper mDbHelper;
     private int mealId;
+    private String currentDayString;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +33,7 @@ public class MealEditorActivity extends AppCompatActivity
 
         Intent intent = getIntent();
         mealId = intent.getIntExtra(MESSAGE_ID, NEW_ID);
+        currentDayString = intent.getStringExtra(MESSAGE_DATE);
 
         if (mealId == NEW_ID) {
             Date d = new Date();
@@ -59,7 +61,7 @@ public class MealEditorActivity extends AppCompatActivity
 
         Meal m = new Meal(mealId,
                 editMealName.getText().toString(),
-                "date",
+                currentDayString,
                 editMealTime.getText().toString());
 
         if (mealId == NEW_ID)

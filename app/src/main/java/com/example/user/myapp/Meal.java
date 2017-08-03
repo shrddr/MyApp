@@ -15,6 +15,6 @@ class Meal {
     }
 
     public String toString() {
-        return id + " " + time + " " + name;
+        return id + " " + date + " " + time + " " + name;
     }
 }

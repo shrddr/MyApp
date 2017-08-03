@@ -12,12 +12,15 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
     private Calendar currentDay;
+    private String currentDayString;
     private MySQLiteOpenHelper mDbHelper;
 
     @Override
@@ -28,6 +31,8 @@ public class MainActivity extends AppCompatActivity {
         mDbHelper = new MySQLiteOpenHelper(this);
 
         currentDay = Calendar.getInstance();
+        currentDayString = new SimpleDateFormat("YYYY-MM-dd", Locale.US).format(currentDay.getTime());
+
         refreshDisplay();
 
         EditText editTextDate = (EditText)findViewById(R.id.editTextDate);
@@ -40,9 +45,9 @@ public class MainActivity extends AppCompatActivity {
         editTextDate.setTag(currentDay.getTime().getTime()/1000);
         editTextDate.setText(DateFormat.getDateFormat(this).format(currentDay.getTime()));
 
-        List<Meal> meals = mDbHelper.getMeals(currentDay.getTime());
+        List<Meal> meals = mDbHelper.getMeals(currentDayString);
 
-        ListView listView = (ListView) findViewById(R.id.listView);
+        ListView listView = (ListView)findViewById(R.id.listView);
         listView.setAdapter(
                 new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, meals));
 
@@ -52,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
                 Meal m = (Meal)parent.getItemAtPosition(position);
                 Intent intent = new Intent(MainActivity.this, MealEditorActivity.class);
                 intent.putExtra(MealEditorActivity.MESSAGE_ID, m.id);
+                intent.putExtra(MealEditorActivity.MESSAGE_DATE, currentDayString);
                 startActivity(intent);
             }
         });
@@ -71,16 +77,19 @@ public class MainActivity extends AppCompatActivity {
 
     public void addMeal(View view) {
         Intent intent = new Intent(this, MealEditorActivity.class);
+        intent.putExtra(MealEditorActivity.MESSAGE_DATE, currentDayString);
         startActivity(intent);
     }
 
     public void prevDay(View view) {
         currentDay.add(Calendar.DATE, -1);
+        currentDayString = new SimpleDateFormat("YYYY-MM-dd", Locale.US).format(currentDay.getTime());
         refreshDisplay();
     }
 
     public void nextDay(View view) {
         currentDay.add(Calendar.DATE, 1);
+        currentDayString = new SimpleDateFormat("YYYY-MM-dd", Locale.US).format(currentDay.getTime());
         refreshDisplay();
     }
 }

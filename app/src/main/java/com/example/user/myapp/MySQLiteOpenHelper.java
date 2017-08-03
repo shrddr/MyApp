@@ -101,7 +101,7 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
             return null;
     }
 
-    public List<Meal> getMeals(Date currentDay) {
+    public List<Meal> getMeals(String currentDay) {
         List<Meal> meals = new ArrayList();
 
         SQLiteDatabase db = getReadableDatabase();
@@ -113,17 +113,17 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
                 MEALS_COL_TIME
         };
 
-        long unixTime = currentDay.getTime() / 1000;
-        String selection = MEALS_COL_TIME + " > " + unixTime;
+        String selection = MEALS_COL_DATE + " = ?";
+        String[] selectionArgs = { currentDay };
 
         String sortOrder =
-                MEALS_COL_ID + " ASC";
+                MEALS_COL_TIME + " ASC";
 
         Cursor cursor = db.query(
                 MEALS_TABLE_NAME,                         // The table to query
                 projection,                               // The columns to return
                 selection,                                // The columns for the WHERE clause
-                null,                            // The values for the WHERE clause
+                selectionArgs,                            // The values for the WHERE clause
                 null,                                     // don't group the rows
                 null,                                     // don't filter by row groups
                 sortOrder                                 // The sort order
