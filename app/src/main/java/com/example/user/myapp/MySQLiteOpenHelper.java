@@ -19,13 +19,15 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
     private static final String MEALS_TABLE_NAME = "dictionary";
     private static final String MEALS_COL_ID = "id";
     private static final String MEALS_COL_NAME = "name";
+    private static final String MEALS_COL_DATE = "date";
     private static final String MEALS_COL_TIME = "time";
 
     private static final String DICTIONARY_TABLE_CREATE =
             "CREATE TABLE " + MEALS_TABLE_NAME + " (" +
                     "id" + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
                     "name" + " TEXT, " +
-                    "time" + " INT);";
+                    "date" + " TEXT, " +
+                    "time" + " TEXT);";
 
     MySQLiteOpenHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -51,6 +53,7 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
 
         ContentValues values = new ContentValues();
         values.put(MEALS_COL_NAME, m.name);
+        values.put(MEALS_COL_DATE, m.date);
         values.put(MEALS_COL_TIME, m.time);
 
         long newRowId = db.insert(MEALS_TABLE_NAME, null, values);
@@ -61,6 +64,7 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
 
         ContentValues values = new ContentValues();
         values.put(MEALS_COL_NAME, m.name);
+        values.put(MEALS_COL_DATE, m.date);
         values.put(MEALS_COL_TIME, m.time);
 
         int count = db.update(
@@ -73,7 +77,7 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
     public Meal getMeal(int id) {
         SQLiteDatabase db = getReadableDatabase();
 
-        String[] projection = { MEALS_COL_NAME, MEALS_COL_TIME };
+        String[] projection = { MEALS_COL_NAME, MEALS_COL_DATE, MEALS_COL_TIME };
 
         Cursor cursor = db.query(
                 MEALS_TABLE_NAME,                    // The table to query
@@ -88,7 +92,8 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             Meal m = new Meal(id,
                               cursor.getString(cursor.getColumnIndexOrThrow(MEALS_COL_NAME)),
-                              cursor.getInt(cursor.getColumnIndexOrThrow(MEALS_COL_TIME)));
+                              cursor.getString(cursor.getColumnIndexOrThrow(MEALS_COL_DATE)),
+                              cursor.getString(cursor.getColumnIndexOrThrow(MEALS_COL_TIME)));
             cursor.close();
             return m;
         }
@@ -104,6 +109,7 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
         String[] projection = {
                 MEALS_COL_ID,
                 MEALS_COL_NAME,
+                MEALS_COL_DATE,
                 MEALS_COL_TIME
         };
 
@@ -126,7 +132,8 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
         while(cursor.moveToNext()) {
             Meal m = new Meal(cursor.getInt(cursor.getColumnIndexOrThrow(MEALS_COL_ID)),
                               cursor.getString(cursor.getColumnIndexOrThrow(MEALS_COL_NAME)),
-                              cursor.getInt(cursor.getColumnIndexOrThrow(MEALS_COL_TIME)));
+                              cursor.getString(cursor.getColumnIndexOrThrow(MEALS_COL_DATE)),
+                              cursor.getString(cursor.getColumnIndexOrThrow(MEALS_COL_TIME)));
             meals.add(m);
         }
         cursor.close();

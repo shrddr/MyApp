@@ -15,6 +15,7 @@ public class MealEditorActivity extends AppCompatActivity
         implements TimePickerDialog.OnTimeSetListener {
 
     public static final String MESSAGE_ID = "com.example.myfirstapp.MESSAGE_ID";
+    public static final String MESSAGE_DATE = "com.example.myfirstapp.MESSAGE_DATE";
     private static final int NEW_ID = -1;
 
     private MySQLiteOpenHelper mDbHelper;
@@ -41,8 +42,7 @@ public class MealEditorActivity extends AppCompatActivity
         if (mealId != NEW_ID) {
             Meal m = mDbHelper.getMeal(mealId);
             editMealName.setText(m.name);
-            Date d = new Date((long)m.time*1000);
-            editMealTime.setText(DateFormat.getTimeFormat(this).format(d));
+            editMealTime.setText(m.time);
         }
 
         new SetTime(editMealTime, this);
@@ -59,7 +59,8 @@ public class MealEditorActivity extends AppCompatActivity
 
         Meal m = new Meal(mealId,
                 editMealName.getText().toString(),
-                (int)(long)editMealTime.getTag());
+                "date",
+                editMealTime.getText().toString());
 
         if (mealId == NEW_ID)
             mDbHelper.addMeal(m);

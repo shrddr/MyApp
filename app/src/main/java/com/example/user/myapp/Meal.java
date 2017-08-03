@@ -4,11 +4,13 @@ class Meal {
 
     public int id;
     public String name;
-    public int time;
+    public String date;
+    public String time;
 
-    public Meal(int id, String name, int time) {
+    public Meal(int id, String name, String date, String time) {
         this.id = id;
         this.name = name;
+        this.date = date;
         this.time = time;
     }
 
