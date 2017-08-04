@@ -1,18 +1,19 @@
 package com.example.user.myapp;
 
-import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.format.DateFormat;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.TimePicker;
 
 import java.util.Date;
 
-public class MealEditorActivity extends AppCompatActivity
-        implements TimePickerDialog.OnTimeSetListener {
+public class MealEditorActivity extends AppCompatActivity {
 
     public static final String MESSAGE_ID = "com.example.myfirstapp.MESSAGE_ID";
     public static final String MESSAGE_DATE = "com.example.myfirstapp.MESSAGE_DATE";
@@ -30,6 +31,7 @@ public class MealEditorActivity extends AppCompatActivity
         mDbHelper = new MySQLiteOpenHelper(this);
         EditText editMealTime = (EditText)findViewById(R.id.editMealTime);
         EditText editMealName = (EditText)findViewById(R.id.editMealName);
+        EditText editMealSize = (EditText)findViewById(R.id.editMealSize);
 
         Intent intent = getIntent();
         mealId = intent.getIntExtra(MESSAGE_ID, NEW_ID);
@@ -45,24 +47,51 @@ public class MealEditorActivity extends AppCompatActivity
             Meal m = mDbHelper.getMeal(mealId);
             editMealName.setText(m.name);
             editMealTime.setText(m.time);
+            editMealSize.setText(Integer.toString(m.size));
         }
 
         new SetTime(editMealTime, this);
+
     }
 
-    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-        EditText editMealTime = (EditText)findViewById(R.id.editMealTime);
-        editMealTime.setText(hourOfDay + ":" + minute);
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.meal_editor, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.action_confirm:
+                confirm(null);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     public void confirm(View view) {
         EditText editMealName = (EditText)findViewById(R.id.editMealName);
         EditText editMealTime = (EditText)findViewById(R.id.editMealTime);
+        EditText editMealSize = (EditText)findViewById(R.id.editMealSize);
+
+        int mealSize = 0;
+        try {
+            mealSize = Integer.parseInt(editMealSize.getText().toString());
+        }
+        catch (NumberFormatException e) {
+            return;
+        }
 
         Meal m = new Meal(mealId,
                 editMealName.getText().toString(),
                 currentDayString,
-                editMealTime.getText().toString());
+                editMealTime.getText().toString(),
+                mealSize
+        );
 
         if (mealId == NEW_ID)
             mDbHelper.addMeal(m);

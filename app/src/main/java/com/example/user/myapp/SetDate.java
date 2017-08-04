@@ -16,7 +16,7 @@ import java.util.Date;
  * Overrides the onFocusChange event of an TextView to open up a DatePickerDialog.
  * The onDateSet event of the picker fills the TextView with the selected date.
  */
-class SetDate implements View.OnFocusChangeListener, DatePickerDialog.OnDateSetListener {
+class SetDate implements View.OnClickListener, DatePickerDialog.OnDateSetListener {
 
     private Context ctx;
     private TextView textView;
@@ -26,14 +26,14 @@ class SetDate implements View.OnFocusChangeListener, DatePickerDialog.OnDateSetL
         this.ctx = ctx;
         this.textView = editText;
         this.textView.setInputType(InputType.TYPE_NULL);
-        this.textView.setOnFocusChangeListener(this);
+        this.textView.setOnClickListener(this);
         this.myCalendar = Calendar.getInstance();
     }
 
     @Override
-    public void onFocusChange(View v, boolean hasFocus) {
+    public void onClick(View v) {
 
-        if (!hasFocus) return;
+
 
         Date dt;
         try {

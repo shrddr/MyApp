@@ -4,4 +4,11 @@
     <string name="MealEditorTitle">Съесть</string>
     <string name="button_clean">Очистить БД</string>
     <string name="button_confirm">Подтвердить</string>
+    <string name="food_name">Выберите еду</string>
+    <string name="food_wt">Вес</string>
+    <string name="arrow_left">&lt;</string>
+    <string name="arrow_right">&gt;</string>
+    <string name="drawer_close">Закрыть</string>
+    <string name="drawer_open">Открыть</string>
+    <string name="share">Поделиться</string>
 </resources>
