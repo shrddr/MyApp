@@ -2,7 +2,6 @@ package com.example.user.myapp;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.format.DateFormat;
 import android.view.Menu;
@@ -13,11 +12,10 @@ import android.widget.EditText;
 
 import java.util.Date;
 
-public class MealEditorActivity extends AppCompatActivity {
+public class ActivityMealEditor extends AppCompatActivity {
 
     public static final String MESSAGE_ID = "com.example.myfirstapp.MESSAGE_ID";
     public static final String MESSAGE_DATE = "com.example.myfirstapp.MESSAGE_DATE";
-    private static final int NEW_ID = -1;
 
     private MySQLiteOpenHelper mDbHelper;
     private int mealId;
@@ -26,24 +24,23 @@ public class MealEditorActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_details_input);
+        setContentView(R.layout.activity_meal_editor);
 
         mDbHelper = new MySQLiteOpenHelper(this);
         EditText editMealTime = (EditText)findViewById(R.id.editMealTime);
         EditText editMealName = (EditText)findViewById(R.id.editMealName);
         EditText editMealSize = (EditText)findViewById(R.id.editMealSize);
 
-        Intent intent = getIntent();
-        mealId = intent.getIntExtra(MESSAGE_ID, NEW_ID);
-        currentDayString = intent.getStringExtra(MESSAGE_DATE);
+        mealId = getIntent().getIntExtra(MESSAGE_ID, Constants.NEW_ID);
+        currentDayString = getIntent().getStringExtra(MESSAGE_DATE);
 
-        if (mealId == NEW_ID) {
+        if (mealId == Constants.NEW_ID) {
             Date d = new Date();
             editMealTime.setText(DateFormat.getTimeFormat(this).format(d));
             editMealTime.setTag(d.getTime()/1000);
         }
 
-        if (mealId != NEW_ID) {
+        if (mealId != Constants.NEW_ID) {
             Meal m = mDbHelper.getMeal(mealId);
             editMealName.setText(m.name);
             editMealTime.setText(m.time);
@@ -51,13 +48,12 @@ public class MealEditorActivity extends AppCompatActivity {
         }
 
         new SetTime(editMealTime, this);
-
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.meal_editor, menu);
+        inflater.inflate(R.menu.editor, menu);
         return true;
     }
 
@@ -93,11 +89,11 @@ public class MealEditorActivity extends AppCompatActivity {
                 mealSize
         );
 
-        if (mealId == NEW_ID)
+        if (mealId == Constants.NEW_ID)
             mDbHelper.addMeal(m);
         else
             mDbHelper.editMeal(m);
 
-        startActivity(new Intent(this, MainActivity.class));
+        startActivity(new Intent(this, ActivityMain.class));
     }
 }

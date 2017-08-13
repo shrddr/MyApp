@@ -12,13 +12,19 @@ import java.util.List;
 public class MySQLiteOpenHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "db.db";
-    private static final int DATABASE_VERSION = 4;
-    private static final String MEALS_TABLE_NAME = "dictionary";
+    private static final int DATABASE_VERSION = 5;
+    private static final String MEALS_TABLE_NAME = "meals";
     private static final String MEALS_COL_ID = "id";
     private static final String MEALS_COL_NAME = "name";
     private static final String MEALS_COL_DATE = "date";
     private static final String MEALS_COL_TIME = "time";
     private static final String MEALS_COL_SIZE = "size";
+    private static final String PRODUCTS_TABLE_NAME = "products";
+    private static final String PRODUCTS_COL_ID = "id";
+    private static final String PRODUCTS_COL_NAME = "name";
+    private static final String PRODUCTS_COL_PROT = "prot";
+    private static final String PRODUCTS_COL_FAT = "fat";
+    private static final String PRODUCTS_COL_CARB = "carb";
 
     private static final String MEALS_TABLE_CREATE =
             "CREATE TABLE " + MEALS_TABLE_NAME + " (" +
@@ -27,6 +33,14 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
                     MEALS_COL_DATE + " TEXT, " +
                     MEALS_COL_TIME + " TEXT, " +
                     MEALS_COL_SIZE + " INT);";
+
+    private static final String PRODUCTS_TABLE_CREATE =
+            "CREATE TABLE " + PRODUCTS_TABLE_NAME + " (" +
+                    PRODUCTS_COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                    PRODUCTS_COL_NAME + " TEXT, " +
+                    PRODUCTS_COL_PROT + " REAL, " +
+                    PRODUCTS_COL_FAT + " REAL, " +
+                    PRODUCTS_COL_CARB + " REAL);";
 
     MySQLiteOpenHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -41,6 +55,8 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + MEALS_TABLE_NAME);
         db.execSQL(MEALS_TABLE_CREATE);
+        db.execSQL("DROP TABLE IF EXISTS " + PRODUCTS_TABLE_NAME);
+        db.execSQL(PRODUCTS_TABLE_CREATE);
     }
 
     public void cleanDB() {
@@ -148,13 +164,73 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
         }
         cursor.close();
 
-        String sql = "SELECT DATE('1501769675')";
-        Cursor mycursor = db.rawQuery(sql, null);
-        mycursor.moveToFirst();
-        int c = mycursor.getColumnCount();
-        String s = mycursor.getString(0);
-        mycursor.close();
-
         return meals;
+    }
+
+    public void updateProduct(Product p) {
+        SQLiteDatabase db = getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(PRODUCTS_COL_NAME, p.name);
+        values.put(PRODUCTS_COL_PROT, p.prot);
+        values.put(PRODUCTS_COL_FAT, p.fat);
+        values.put(PRODUCTS_COL_CARB, p.carb);
+
+        if (p.id == Constants.NEW_ID)
+            db.insert(
+                    PRODUCTS_TABLE_NAME,
+                    null,
+                    values);
+        else
+            db.update(
+                    PRODUCTS_TABLE_NAME,
+                    values,
+                    PRODUCTS_COL_ID + " = " + p.id,
+                    null);
+
+    }
+
+    public List<Product> getProducts(String s) {
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor;
+
+        if (s.isEmpty()) {
+            cursor = db.query(
+                    PRODUCTS_TABLE_NAME,                       // The table to query
+                    null,                                   // The columns to return
+                    null,                              // The columns for the WHERE clause
+                    null,                          // The values for the WHERE clause
+                    null,                                   // don't group the rows
+                    null,                                   // don't filter by row groups
+                    PRODUCTS_COL_NAME + " ASC"                               // The sort order
+            );
+        }
+        else {
+            cursor = db.query(
+                    PRODUCTS_TABLE_NAME,                       // The table to query
+                    null,                                   // The columns to return
+                    PRODUCTS_COL_NAME + " LIKE ?",                              // The columns for the WHERE clause
+                    new String[] { "%"+s+"%" },                          // The values for the WHERE clause
+                    null,                                   // don't group the rows
+                    null,                                   // don't filter by row groups
+                    PRODUCTS_COL_NAME + " ASC"                               // The sort order
+            );
+        }
+
+
+
+        List<Product> products = new ArrayList<>();
+        while(cursor.moveToNext()) {
+            Product p = new Product(
+                    cursor.getInt(cursor.getColumnIndexOrThrow(PRODUCTS_COL_ID)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(PRODUCTS_COL_NAME)),
+                    cursor.getFloat(cursor.getColumnIndexOrThrow(PRODUCTS_COL_PROT)),
+                    cursor.getFloat(cursor.getColumnIndexOrThrow(PRODUCTS_COL_FAT)),
+                    cursor.getFloat(cursor.getColumnIndexOrThrow(PRODUCTS_COL_CARB)));
+            products.add(p);
+        }
+        cursor.close();
+
+        return products;
     }
 }

@@ -11,4 +11,13 @@
     <string name="drawer_close">Закрыть</string>
     <string name="drawer_open">Открыть</string>
     <string name="share">Поделиться</string>
+    <string name="prod_carb">Угли</string>
+    <string name="prod_fat">Жыр</string>
+    <string name="prod_prot">Белки</string>
+    <string name="button_send">Отправить</string>
+    <string name="action_search">Поиск</string>
+    <string name="alert_dialog_cancel">Отмена</string>
+    <string name="alert_dialog_ok">OK</string>
+    <string name="alert_dialog_two_buttons_title">Проблемка</string>
+    <string name="app_name">МойАпп</string>
 </resources>

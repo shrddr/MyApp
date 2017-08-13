@@ -12,10 +12,19 @@
     <string-array name="screens_array">
         <item>Today</item>
         <item>Stats</item>
-        <item>Database</item>
+        <item>Products</item>
         <item>Settings</item>
     </string-array>
     <string name="drawer_open">Open</string>
     <string name="drawer_close">Close</string>
     <string name="share">Share</string>
+    <string name="action_search">Search</string>
+    <string name="alert_dialog_ok">OK</string>
+    <string name="alert_dialog_cancel">Cancel</string>
+    <string name="alert_dialog_two_buttons_title">we\'ve got a problem</string>
+    <string name="prod_prot">Protein</string>
+    <string name="prod_fat">Fat</string>
+    <string name="prod_carb">Carb</string>
+    <string name="prod_name">Name</string>
+    <string name="ProductEditorTitle">Edit</string>
 </resources>
