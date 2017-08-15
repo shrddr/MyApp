@@ -17,7 +17,6 @@ public class ActivityMealEditor extends AppCompatActivity
 
     private MySQLiteOpenHelper mDbHelper;
     private Meal m;
-    private String currentDayString;
     private EditText etTime, etName, etSize;
 
     @Override

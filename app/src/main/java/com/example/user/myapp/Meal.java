@@ -12,8 +12,9 @@ class Meal implements Parcelable {
     public String time;
     public int size;
 
-    Meal(int id) {
+    Meal(int id, String date) {
         this.id = id;
+        this.date = date;
     }
 
     public Meal(int id, String name, String date, String time, int size) {

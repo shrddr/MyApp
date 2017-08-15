@@ -86,7 +86,7 @@ public class FragmentToday extends Fragment implements View.OnClickListener {
     }
 
     void addMeal() {
-        Meal m = new Meal(Constants.NEW_ID);
+        Meal m = new Meal(Constants.NEW_ID, currentDayString);
         editMeal(m);
     }
 
