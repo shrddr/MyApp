@@ -27,16 +27,13 @@ public class ActivityProductEditor extends AppCompatActivity {
         eFat = (EditText)findViewById(R.id.editTextFat);
         eCarb = (EditText)findViewById(R.id.editTextCarb);
 
-        Bundle b = this.getIntent().getExtras();
-        if (b != null) {
-            p = b.getParcelable(PRODUCT_PARCEL);
+        p = this.getIntent().getExtras().getParcelable(PRODUCT_PARCEL);
+        if (p.id != Constants.NEW_ID) {
             eName.setText(p.name);
             eProt.setText(p.getProt());
             eFat.setText(p.getFat());
             eCarb.setText(p.getCarb());
         }
-        else
-            p = new Product(0, "", 0, 0, 0);
     }
 
     @Override

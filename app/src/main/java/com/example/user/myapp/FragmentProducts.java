@@ -2,27 +2,27 @@ package com.example.user.myapp;
 
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.AdapterView;
 import android.widget.ListView;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class FragmentProducts extends Fragment implements View.OnClickListener {
 
     private MySQLiteOpenHelper mDbHelper;
     private ListView listViewProducts;
     private String currentFilter;
+    private ProductCursorAdapter pca;
 
     public FragmentProducts() {
         // Required empty public constructor
@@ -36,10 +36,12 @@ public class FragmentProducts extends Fragment implements View.OnClickListener {
 
         v.findViewById(R.id.buttonAdd).setOnClickListener(this);
 
-        mDbHelper = new MySQLiteOpenHelper(getActivity());
-        listViewProducts = (ListView)v.findViewById(R.id.listViewProducts);
         currentFilter = "";
-        refreshList();
+        listViewProducts = (ListView)v.findViewById(R.id.listViewProducts);
+        mDbHelper = new MySQLiteOpenHelper(getActivity());
+        Cursor c = mDbHelper.getProductCursor(currentFilter);
+        pca = new ProductCursorAdapter(getContext(), c, this);
+        listViewProducts.setAdapter(pca);
 
         return v;
     }
@@ -51,9 +53,26 @@ public class FragmentProducts extends Fragment implements View.OnClickListener {
     }
 
     private void refreshList() {
-        List<Product> products = mDbHelper.getProducts(currentFilter);
-        listViewProducts.setAdapter(
-                new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, products));
+        Cursor c = mDbHelper.getProductCursor(currentFilter);
+        pca.changeCursor(c);
+    }
+
+    void deleteProduct(int id) {
+        mDbHelper.deleteProduct(id);
+        refreshList();
+    }
+
+    void addProduct() {
+        Product p = new Product(Constants.NEW_ID);
+        editProduct(p);
+    }
+
+    void editProduct(Product p) {
+        Intent i = new Intent(getActivity(), ActivityProductEditor.class);
+        Bundle b = new Bundle();
+        b.putParcelable(ActivityProductEditor.PRODUCT_PARCEL, p);
+        i.putExtras(b);
+        startActivityForResult(i, Constants.REQUEST_PRODUCT_EDITOR);
     }
 
     @Override
@@ -82,16 +101,8 @@ public class FragmentProducts extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.buttonAdd:
-                Product p = new Product(Constants.NEW_ID);
-                Intent i = new Intent(getActivity(), ActivityProductEditor.class);
-                Bundle b = new Bundle();
-                b.putParcelable(ActivityProductEditor.PRODUCT_PARCEL, p);
-                i.putExtras(b);
-                startActivityForResult(i, Constants.REQUEST_PRODUCT_EDITOR);
-                break;
+            case R.id.buttonAdd: addProduct();
         }
     }
-
 
 }

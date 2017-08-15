@@ -1,5 +1,6 @@
 package com.example.user.myapp;
 
+import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -23,20 +24,26 @@ class Product implements Parcelable {
         this.carb = carb;
     }
 
+    public Product (Cursor c) {
+        this.id = c.getInt(c.getColumnIndexOrThrow(MySQLiteOpenHelper.PRODUCTS_COL_ID));
+        this.name = c.getString(c.getColumnIndexOrThrow(MySQLiteOpenHelper.PRODUCTS_COL_NAME));
+        this.prot = c.getFloat(c.getColumnIndexOrThrow(MySQLiteOpenHelper.PRODUCTS_COL_PROT));
+        this.fat = c.getFloat(c.getColumnIndexOrThrow(MySQLiteOpenHelper.PRODUCTS_COL_FAT));
+        this.carb = c.getFloat(c.getColumnIndexOrThrow(MySQLiteOpenHelper.PRODUCTS_COL_CARB));
+    }
+
     public String toString() {
         return id + " " + name + " (" + prot + " " + fat + " " + carb + ")";
     }
 
-    public String getProt() {
-        return Float.toString(prot);
-    }
+    public String getProt() { return String.format("%.0f", prot); }
 
     public String getFat() {
-        return Float.toString(fat);
+        return String.format("%.0f", fat);
     }
 
     public String getCarb() {
-        return Float.toString(carb);
+        return String.format("%.0f", carb);
     }
 
     public static final Creator<Product> CREATOR = new Creator<Product>() {
@@ -72,4 +79,6 @@ class Product implements Parcelable {
         fat = in.readFloat();
         carb = in.readFloat();
     }
+
+
 }

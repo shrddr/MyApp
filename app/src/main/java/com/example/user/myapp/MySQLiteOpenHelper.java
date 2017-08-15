@@ -12,19 +12,19 @@ import java.util.List;
 public class MySQLiteOpenHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "db.db";
-    private static final int DATABASE_VERSION = 5;
+    private static final int DATABASE_VERSION = 6;
     private static final String MEALS_TABLE_NAME = "meals";
-    private static final String MEALS_COL_ID = "id";
+    private static final String MEALS_COL_ID = "_id";
     private static final String MEALS_COL_NAME = "name";
     private static final String MEALS_COL_DATE = "date";
     private static final String MEALS_COL_TIME = "time";
     private static final String MEALS_COL_SIZE = "size";
     private static final String PRODUCTS_TABLE_NAME = "products";
-    private static final String PRODUCTS_COL_ID = "id";
-    private static final String PRODUCTS_COL_NAME = "name";
-    private static final String PRODUCTS_COL_PROT = "prot";
-    private static final String PRODUCTS_COL_FAT = "fat";
-    private static final String PRODUCTS_COL_CARB = "carb";
+    static final String PRODUCTS_COL_ID = "_id";
+    static final String PRODUCTS_COL_NAME = "name";
+    static final String PRODUCTS_COL_PROT = "prot";
+    static final String PRODUCTS_COL_FAT = "fat";
+    static final String PRODUCTS_COL_CARB = "carb";
 
     private static final String MEALS_TABLE_CREATE =
             "CREATE TABLE " + MEALS_TABLE_NAME + " (" +
@@ -49,6 +49,7 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(MEALS_TABLE_CREATE);
+        db.execSQL(PRODUCTS_TABLE_CREATE);
     }
 
     @Override
@@ -167,7 +168,7 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
         return meals;
     }
 
-    public void updateProduct(Product p) {
+    void updateProduct(Product p) {
         SQLiteDatabase db = getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -187,10 +188,18 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
                     values,
                     PRODUCTS_COL_ID + " = " + p.id,
                     null);
-
     }
 
-    public List<Product> getProducts(String s) {
+    void deleteProduct(int id)
+    {
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete(
+                PRODUCTS_TABLE_NAME,
+                PRODUCTS_COL_ID + " = " + id,
+                null);
+    }
+
+    Cursor getProductCursor(String s) {
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor;
 
@@ -217,20 +226,6 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
             );
         }
 
-
-
-        List<Product> products = new ArrayList<>();
-        while(cursor.moveToNext()) {
-            Product p = new Product(
-                    cursor.getInt(cursor.getColumnIndexOrThrow(PRODUCTS_COL_ID)),
-                    cursor.getString(cursor.getColumnIndexOrThrow(PRODUCTS_COL_NAME)),
-                    cursor.getFloat(cursor.getColumnIndexOrThrow(PRODUCTS_COL_PROT)),
-                    cursor.getFloat(cursor.getColumnIndexOrThrow(PRODUCTS_COL_FAT)),
-                    cursor.getFloat(cursor.getColumnIndexOrThrow(PRODUCTS_COL_CARB)));
-            products.add(p);
-        }
-        cursor.close();
-
-        return products;
+        return cursor;
     }
 }
