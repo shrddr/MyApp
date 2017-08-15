@@ -12,14 +12,13 @@ import android.widget.EditText;
 
 import java.util.Date;
 
-public class ActivityMealEditor extends AppCompatActivity {
-
-    public static final String MESSAGE_ID = "com.example.myfirstapp.MESSAGE_ID";
-    public static final String MESSAGE_DATE = "com.example.myfirstapp.MESSAGE_DATE";
+public class ActivityMealEditor extends AppCompatActivity
+        implements View.OnClickListener {
 
     private MySQLiteOpenHelper mDbHelper;
-    private int mealId;
+    private Meal m;
     private String currentDayString;
+    private EditText etTime, etName, etSize;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,27 +26,26 @@ public class ActivityMealEditor extends AppCompatActivity {
         setContentView(R.layout.activity_meal_editor);
 
         mDbHelper = new MySQLiteOpenHelper(this);
-        EditText editMealTime = (EditText)findViewById(R.id.editMealTime);
-        EditText editMealName = (EditText)findViewById(R.id.editMealName);
-        EditText editMealSize = (EditText)findViewById(R.id.editMealSize);
 
-        mealId = getIntent().getIntExtra(MESSAGE_ID, Constants.NEW_ID);
-        currentDayString = getIntent().getStringExtra(MESSAGE_DATE);
+        etTime = (EditText)findViewById(R.id.editMealTime);
+        etName = (EditText)findViewById(R.id.editMealName);
+        etSize = (EditText)findViewById(R.id.editMealSize);
 
-        if (mealId == Constants.NEW_ID) {
+        m = this.getIntent().getExtras().getParcelable(Constants.MEAL_PARCEL);
+
+        if (m.id == Constants.NEW_ID) {
             Date d = new Date();
-            editMealTime.setText(DateFormat.getTimeFormat(this).format(d));
-            editMealTime.setTag(d.getTime()/1000);
+            etTime.setText(DateFormat.getTimeFormat(this).format(d));
+            etTime.setTag(d.getTime()/1000);
+        }
+        else {
+            etName.setText(m.name);
+            etTime.setText(m.time);
+            etSize.setText(Integer.toString(m.size));
         }
 
-        if (mealId != Constants.NEW_ID) {
-            Meal m = mDbHelper.getMeal(mealId);
-            editMealName.setText(m.name);
-            editMealTime.setText(m.time);
-            editMealSize.setText(Integer.toString(m.size));
-        }
-
-        new SetTime(editMealTime, this);
+        new SetTime(etTime, this);
+        etName.setOnClickListener(this);
     }
 
     @Override
@@ -62,37 +60,43 @@ public class ActivityMealEditor extends AppCompatActivity {
 
         switch (item.getItemId()) {
             case R.id.action_confirm:
-                confirm(null);
+                confirm();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    public void confirm(View view) {
-        EditText editMealName = (EditText)findViewById(R.id.editMealName);
-        EditText editMealTime = (EditText)findViewById(R.id.editMealTime);
-        EditText editMealSize = (EditText)findViewById(R.id.editMealSize);
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.editMealName: {
+                Intent i = new Intent(this, ActivityProductPicker.class);
+                startActivityForResult(i, Constants.REQUEST_PRODUCT_PICKER);
+                break;
+            }
+        }
+    }
 
-        int mealSize = 0;
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode != Constants.DIALOG_SUCCESS) return;
+        Product p = data.getExtras().getParcelable(Constants.PRODUCT_PARCEL);
+        etName.setText(p.name);
+    }
+
+    public void confirm() {
+
         try {
-            mealSize = Integer.parseInt(editMealSize.getText().toString());
+            m.name = etName.getText().toString();
+            m.size = Integer.parseInt(etSize.getText().toString());
+            m.time = etTime.getText().toString();
         }
         catch (NumberFormatException e) {
             return;
         }
 
-        Meal m = new Meal(mealId,
-                editMealName.getText().toString(),
-                currentDayString,
-                editMealTime.getText().toString(),
-                mealSize
-        );
-
-        if (mealId == Constants.NEW_ID)
-            mDbHelper.addMeal(m);
-        else
-            mDbHelper.editMeal(m);
+        mDbHelper.updateMeal(m);
 
         startActivity(new Intent(this, ActivityMain.class));
     }

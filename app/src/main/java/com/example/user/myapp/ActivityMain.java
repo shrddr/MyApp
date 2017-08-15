@@ -45,7 +45,7 @@ public class ActivityMain extends AppCompatActivity implements AdapterView.OnIte
         getSupportActionBar().setHomeButtonEnabled(true);
 
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
-        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
+        mDrawerList.setAdapter(new ArrayAdapter<>(this,
                 R.layout.item_drawer, mScreenTitles));
         mDrawerList.setOnItemClickListener(this);
 

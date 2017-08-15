@@ -15,23 +15,21 @@ import java.util.Date;
  * Overrides the onFocusChange event of an TextView to open up a TimePickerDialog.
  * The onTimeSet event of the picker fills the TextView with the selected time.
  */
-class SetTime implements View.OnFocusChangeListener, TimePickerDialog.OnTimeSetListener {
+class SetTime implements View.OnClickListener, TimePickerDialog.OnTimeSetListener {
 
     private Context ctx;
     private TextView textView;
     private Calendar myCalendar;
 
-    public SetTime(TextView editText, Context ctx){
+    SetTime(TextView editText, Context ctx){
         this.ctx = ctx;
         this.textView = editText;
-        this.textView.setOnFocusChangeListener(this);
+        this.textView.setOnClickListener(this);
         this.myCalendar = Calendar.getInstance();
     }
 
     @Override
-    public void onFocusChange(View v, boolean hasFocus) {
-        if (!hasFocus) return;
-
+    public void onClick(View v) {
         Date dt;
         try {
             dt = DateFormat.getTimeFormat(ctx).parse(this.textView.getText().toString());

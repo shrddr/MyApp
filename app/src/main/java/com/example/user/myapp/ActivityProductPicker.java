@@ -1,12 +1,11 @@
 package com.example.user.myapp;
 
-
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -14,46 +13,41 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class FragmentProducts extends Fragment implements View.OnClickListener {
+public class ActivityProductPicker extends AppCompatActivity {
 
     private MySQLiteOpenHelper mDbHelper;
     private String currentFilter;
     private ProductCursorAdapter pca;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_products, container, false);
-        setHasOptionsMenu(true);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_product_picker);
 
-        v.findViewById(R.id.buttonAdd).setOnClickListener(this);
+        mDbHelper = new MySQLiteOpenHelper(this);
 
         currentFilter = "";
-        mDbHelper = new MySQLiteOpenHelper(getActivity());
-        ListView listViewProducts = (ListView) v.findViewById(R.id.listViewProducts);
+        ListView listViewProducts = (ListView)findViewById(R.id.listViewProducts);
+        mDbHelper = new MySQLiteOpenHelper(this);
         Cursor c = mDbHelper.getProductCursor(currentFilter);
-        pca = new ProductCursorAdapter(getContext(), c, this);
+        pca = new ProductCursorAdapter(this, c);
         listViewProducts.setAdapter(pca);
+    }
 
-        return v;
+    private void refreshList() {
+        Cursor c = mDbHelper.getProductCursor(currentFilter);
+        pca.changeCursor(c);
     }
 
     @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.buttonAdd: addProduct();
-        }
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.my_products, menu);
-        super.onCreateOptionsMenu(menu, inflater);
+        super.onCreateOptionsMenu(menu);
 
         MenuItem searchItem = menu.findItem(R.id.action_search);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
@@ -71,47 +65,32 @@ public class FragmentProducts extends Fragment implements View.OnClickListener {
                 return false;
             }
         });
+        return true;
     }
 
     @Override
-    public void onResume() {
-        refreshList();
-        super.onResume();
-    }
+    public boolean onOptionsItemSelected(MenuItem item) {
 
-    private void refreshList() {
-        Cursor c = mDbHelper.getProductCursor(currentFilter);
-        pca.changeCursor(c);
-    }
+        switch (item.getItemId()) {
 
-    void addProduct() {
-        Product p = new Product(Constants.NEW_ID);
-        editProduct(p);
-    }
+            case android.R.id.home:
+                onBackPressed();
+                return true;
 
-    void editProduct(Product p) {
-        Intent i = new Intent(getActivity(), ActivityProductEditor.class);
-        i.putExtra(Constants.PRODUCT_PARCEL, p);
-        startActivityForResult(i, Constants.REQUEST_PRODUCT_EDITOR);
-    }
-
-    void deleteProduct(int id) {
-        mDbHelper.deleteProduct(id);
-        refreshList();
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     private class ProductCursorAdapter extends CursorAdapter {
 
-        private FragmentProducts parent;
-
-        ProductCursorAdapter(Context context, Cursor cursor, FragmentProducts parent) {
+        ProductCursorAdapter(Context context, Cursor cursor) {
             super(context, cursor, 0);
-            this.parent = parent;
         }
 
         @Override
         public View newView(Context context, Cursor cursor, ViewGroup parent) {
-            return LayoutInflater.from(context).inflate(R.layout.item_product, parent, false);
+            return LayoutInflater.from(context).inflate(R.layout.item_product_picker, parent, false);
         }
 
         @Override
@@ -131,18 +110,22 @@ public class FragmentProducts extends Fragment implements View.OnClickListener {
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    parent.editProduct(p);
+                    int resultCode = Constants.DIALOG_SUCCESS;
+
+                    /*Intent i = new Intent();
+                    Bundle b = new Bundle();
+                    b.putParcelable(Constants.PRODUCT_PARCEL, p);
+                    i.putExtras(b);
+                    setResult(resultCode, i);
+                    finish();*/
+
+                    Intent i = new Intent();
+                    i.putExtra(Constants.PRODUCT_PARCEL, p);
+                    setResult(resultCode, i);
+                    finish();
                 }
             });
 
-            Button bDelete = (Button) view.findViewById(R.id.bDelete);
-            bDelete.setOnClickListener(new View.OnClickListener(){
-                @Override
-                public void onClick(View v) {
-                    parent.deleteProduct(p.id);
-                    notifyDataSetChanged();
-                }
-            });
         }
     }
 }

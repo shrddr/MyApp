@@ -12,7 +12,7 @@ class Product implements Parcelable {
     public float fat;
     public float carb;
 
-    public Product(int id) {
+    Product(int id) {
         this.id = id;
     }
 
@@ -24,16 +24,12 @@ class Product implements Parcelable {
         this.carb = carb;
     }
 
-    public Product (Cursor c) {
+    public Product(Cursor c) {
         this.id = c.getInt(c.getColumnIndexOrThrow(MySQLiteOpenHelper.PRODUCTS_COL_ID));
         this.name = c.getString(c.getColumnIndexOrThrow(MySQLiteOpenHelper.PRODUCTS_COL_NAME));
         this.prot = c.getFloat(c.getColumnIndexOrThrow(MySQLiteOpenHelper.PRODUCTS_COL_PROT));
         this.fat = c.getFloat(c.getColumnIndexOrThrow(MySQLiteOpenHelper.PRODUCTS_COL_FAT));
         this.carb = c.getFloat(c.getColumnIndexOrThrow(MySQLiteOpenHelper.PRODUCTS_COL_CARB));
-    }
-
-    public String toString() {
-        return id + " " + name + " (" + prot + " " + fat + " " + carb + ")";
     }
 
     public String getProt() { return String.format("%.0f", prot); }
@@ -80,5 +76,7 @@ class Product implements Parcelable {
         carb = in.readFloat();
     }
 
-
+    public String toString() {
+        return id + " " + name + " (" + prot + " " + fat + " " + carb + ")";
+    }
 }

@@ -1,6 +1,5 @@
 package com.example.user.myapp;
 
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -10,9 +9,8 @@ import android.widget.EditText;
 
 public class ActivityProductEditor extends AppCompatActivity {
 
-    public static final String PRODUCT_PARCEL = "com.example.myfirstapp.PRODUCT_PARCEL";
     private Product p;
-    private EditText eName, eProt, eFat, eCarb;
+    private EditText etName, etProt, etFat, etCarb;
     private MySQLiteOpenHelper mDbHelper;
 
     @Override
@@ -22,17 +20,17 @@ public class ActivityProductEditor extends AppCompatActivity {
 
         mDbHelper = new MySQLiteOpenHelper(this);
 
-        eName = (EditText)findViewById(R.id.editTextName);
-        eProt = (EditText)findViewById(R.id.editTextProt);
-        eFat = (EditText)findViewById(R.id.editTextFat);
-        eCarb = (EditText)findViewById(R.id.editTextCarb);
+        etName = (EditText)findViewById(R.id.editTextName);
+        etProt = (EditText)findViewById(R.id.editTextProt);
+        etFat = (EditText)findViewById(R.id.editTextFat);
+        etCarb = (EditText)findViewById(R.id.editTextCarb);
 
-        p = this.getIntent().getExtras().getParcelable(PRODUCT_PARCEL);
-        if (p.id != Constants.NEW_ID) {
-            eName.setText(p.name);
-            eProt.setText(p.getProt());
-            eFat.setText(p.getFat());
-            eCarb.setText(p.getCarb());
+        p = this.getIntent().getExtras().getParcelable(Constants.PRODUCT_PARCEL);
+        if (p != null && p.id != Constants.NEW_ID) {
+            etName.setText(p.name);
+            etProt.setText(p.getProt());
+            etFat.setText(p.getFat());
+            etCarb.setText(p.getCarb());
         }
     }
 
@@ -47,12 +45,13 @@ public class ActivityProductEditor extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
+
             case R.id.action_confirm:
-                p.name = eName.getText().toString();
+                p.name = etName.getText().toString();
                 try {
-                    p.prot = Float.parseFloat(eProt.getText().toString());
-                    p.fat = Float.parseFloat(eFat.getText().toString());
-                    p.carb = Float.parseFloat(eCarb.getText().toString());
+                    p.prot = Float.parseFloat(etProt.getText().toString());
+                    p.fat = Float.parseFloat(etFat.getText().toString());
+                    p.carb = Float.parseFloat(etCarb.getText().toString());
                 }
                 catch (NumberFormatException e) {
                     return true;

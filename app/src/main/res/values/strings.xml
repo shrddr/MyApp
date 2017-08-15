@@ -2,10 +2,8 @@
     <string name="app_name">MyApp</string>
     <string name="food_name">Pick food</string>
     <string name="food_wt">Set weight</string>
-    <string name="button_add">Add meal</string>
     <string name="button_confirm">Confirm</string>
     <string name="button_clean">Clear DB</string>
-    <string name="button_send">Send</string>
     <string name="MealEditorTitle">Eat</string>
     <string name="arrow_left">&lt;</string>
     <string name="arrow_right">&gt;</string>
@@ -27,4 +25,5 @@
     <string name="prod_carb">Carb</string>
     <string name="prod_name">Name</string>
     <string name="ProductEditorTitle">Edit</string>
+    <string name="ProductPickerTitle">Select a product</string>
 </resources>
